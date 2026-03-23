@@ -1090,7 +1090,7 @@
 							class=" absolute -top-12 left-0 right-0 flex justify-center z-30 pointer-events-none"
 						>
 							<button
-								class=" bg-white border border-gray-100 dark:border-none dark:bg-white/20 p-1.5 rounded-full pointer-events-auto"
+								class="p-1.5 rounded-full pointer-events-auto transition-colors hover:bg-[var(--ember-ash)]" style="background: var(--ember-stone); border: 1px solid var(--ember-cinder); color: var(--ember-text-secondary);"
 								on:click={() => {
 									autoScroll = true;
 									scrollToBottom();
@@ -1198,9 +1198,8 @@
 
 						<div
 							id="message-input-container"
-							class="flex-1 flex flex-col relative w-full shadow-lg rounded-3xl border {$temporaryChatEnabled
-								? 'border-dashed border-gray-100 dark:border-gray-800 hover:border-gray-200 focus-within:border-gray-200 hover:dark:border-gray-700 focus-within:dark:border-gray-700'
-								: ' border-gray-100/30 dark:border-gray-850/30 hover:border-gray-200 focus-within:border-gray-100 hover:dark:border-gray-800 focus-within:dark:border-gray-800'}  transition px-1 bg-white/5 dark:bg-gray-500/5 backdrop-blur-sm dark:text-gray-100"
+							class="flex-1 flex flex-col relative w-full rounded-2xl transition px-1"
+							style="background: var(--ember-stone); border: {$temporaryChatEnabled ? '1px dashed var(--ember-cinder)' : '1px solid rgba(69,69,69,0.6)'}; box-shadow: 0 4px 24px rgba(0,0,0,0.4); color: var(--ember-text-primary);"
 							dir={$settings?.chatDirection ?? 'auto'}
 						>
 							{#if atSelectedModel !== undefined}
@@ -1939,9 +1938,8 @@
 												>
 													<button
 														id="send-message-button"
-														class="{!(prompt === '' && files.length === 0) || uploadPending
-															? 'bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 '
-															: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'} transition rounded-full p-1.5 self-center"
+														class="{!(prompt === '' && files.length === 0) || uploadPending ? 'ember-glow' : 'disabled'} transition rounded-full p-1.5 self-center"
+														style="background: {!(prompt === '' && files.length === 0) || uploadPending ? 'var(--ember-flame)' : 'var(--ember-ash)'}; color: {!(prompt === '' && files.length === 0) || uploadPending ? 'white' : 'var(--ember-text-tertiary)'};"
 														type="submit"
 														disabled={(prompt === '' && files.length === 0) || uploadPending}
 													>

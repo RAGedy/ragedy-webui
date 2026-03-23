@@ -376,14 +376,13 @@
 	{#if confirmEdit}
 		<div
 			id="sidebar-chat-item"
-			class=" w-full flex justify-between rounded-xl px-[11px] py-[6px] {id === $chatId ||
-			confirmEdit
-				? 'bg-gray-100 dark:bg-gray-900 selected'
-				: selected
-					? 'bg-gray-100 dark:bg-gray-950 selected'
-					: 'group-hover:bg-gray-100 dark:group-hover:bg-gray-950'}  whitespace-nowrap text-ellipsis relative {generating
-				? 'cursor-not-allowed'
-				: ''}"
+			class=" w-full flex justify-between rounded-md whitespace-nowrap text-ellipsis relative {generating ? 'cursor-not-allowed' : ''}"
+			style="
+				min-height: 36px;
+				padding: 4px 9px;
+				background: {id === $chatId || confirmEdit || selected ? 'var(--ember-stone)' : 'transparent'};
+				border-left: 2px solid {id === $chatId || confirmEdit ? 'var(--ember-flame)' : 'transparent'};
+			"
 		>
 			<input
 				id="chat-title-input-{id}"
@@ -412,12 +411,13 @@
 	{:else}
 		<a
 			id="sidebar-chat-item"
-			class=" w-full flex justify-between rounded-xl px-[11px] py-[6px] {id === $chatId ||
-			confirmEdit
-				? 'bg-gray-100 dark:bg-gray-900 selected'
-				: selected
-					? 'bg-gray-100 dark:bg-gray-950 selected'
-					: ' group-hover:bg-gray-100 dark:group-hover:bg-gray-950'}  whitespace-nowrap text-ellipsis"
+			class=" w-full flex justify-between rounded-md whitespace-nowrap text-ellipsis hover:bg-[var(--ember-ash)] transition-colors"
+			style="
+				min-height: 36px;
+				padding: 4px 9px;
+				background: {id === $chatId || confirmEdit || selected ? 'var(--ember-stone)' : 'transparent'};
+				border-left: 2px solid {id === $chatId || confirmEdit ? 'var(--ember-flame)' : 'transparent'};
+			"
 			href="/c/{id}"
 			on:click={() => {
 				dispatch('select');
@@ -461,7 +461,7 @@
 
 			<!-- Time ago indicator -->
 			{#if createdAt && !mouseOver}
-				<div class="shrink-0 self-center text-[10px] text-gray-400 dark:text-gray-500 pl-2">
+				<div class="shrink-0 self-center text-[10px] pl-2" style="color: var(--ember-text-tertiary);">
 					{formatTimeAgo(createdAt)}
 				</div>
 			{/if}
@@ -472,16 +472,15 @@
 	<div
 		id="sidebar-chat-item-menu"
 		class="
-        {id === $chatId || confirmEdit
-			? 'from-gray-100 dark:from-gray-900 selected'
-			: selected
-				? 'from-gray-100 dark:from-gray-950 selected'
-				: 'invisible group-hover:visible from-gray-100 dark:from-gray-950'}
+        {id === $chatId || confirmEdit || selected
+			? 'selected'
+			: 'invisible group-hover:visible'}
             absolute {className === 'pr-2'
 			? 'right-[8px]'
 			: 'right-1'} top-[4px] py-1 pr-0.5 mr-1.5 pl-5 bg-linear-to-l from-80%
 
               to-transparent"
+		style="--tw-gradient-from: {id === $chatId || confirmEdit ? 'var(--ember-stone)' : (selected ? 'var(--ember-stone)' : 'var(--ember-ash)')};"
 		on:mouseenter={(e) => {
 			mouseOver = true;
 		}}

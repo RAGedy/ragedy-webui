@@ -293,10 +293,12 @@
 							<div class="flex gap-1 min-w-0 overflow-x-auto scrollbar-hidden">
 								{#if showControlsTab}
 									<button
-										class="px-2.5 py-1 text-sm rounded-lg transition whitespace-nowrap {activeTab ===
-										'controls'
-											? 'bg-gray-100 dark:bg-gray-800 font-medium text-gray-900 dark:text-white'
-											: 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}"
+										class="px-2.5 py-1 text-sm rounded-lg transition whitespace-nowrap {activeTab === 'controls'
+											? 'font-medium'
+											: ''}"
+										style="{activeTab === 'controls'
+											? 'background: var(--ember-ash); color: var(--ember-text-primary);'
+											: 'color: var(--ember-text-tertiary);'}"
 										on:click={() => (activeTab = 'controls')}
 									>
 										{$i18n.t('Controls')}
@@ -304,10 +306,12 @@
 								{/if}
 								{#if showFilesTab}
 									<button
-										class="px-2.5 py-1 text-sm rounded-lg transition whitespace-nowrap {activeTab ===
-										'files'
-											? 'bg-gray-100 dark:bg-gray-800 font-medium text-gray-900 dark:text-white'
-											: 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}"
+										class="px-2.5 py-1 text-sm rounded-lg transition whitespace-nowrap {activeTab === 'files'
+											? 'font-medium'
+											: ''}"
+										style="{activeTab === 'files'
+											? 'background: var(--ember-ash); color: var(--ember-text-primary);'
+											: 'color: var(--ember-text-tertiary);'}"
 										on:click={() => (activeTab = 'files')}
 									>
 										{$i18n.t('Files')}
@@ -315,10 +319,12 @@
 								{/if}
 								{#if showOverviewTab}
 									<button
-										class="px-2.5 py-1 text-sm rounded-lg transition whitespace-nowrap {activeTab ===
-										'overview'
-											? 'bg-gray-100 dark:bg-gray-800 font-medium text-gray-900 dark:text-white'
-											: 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}"
+										class="px-2.5 py-1 text-sm rounded-lg transition whitespace-nowrap {activeTab === 'overview'
+											? 'font-medium'
+											: ''}"
+										style="{activeTab === 'overview'
+											? 'background: var(--ember-ash); color: var(--ember-text-primary);'
+											: 'color: var(--ember-text-tertiary);'}"
 										on:click={() => (activeTab = 'overview')}
 									>
 										{$i18n.t('Overview')}
@@ -326,7 +332,8 @@
 								{/if}
 							</div>
 							<button
-								class="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition text-gray-500 dark:text-gray-400"
+								class="p-1 rounded-lg transition"
+								style="color: var(--ember-text-tertiary);"
 								on:click={() => showControls.set(false)}
 								aria-label={$i18n.t('Close')}
 							>
@@ -375,7 +382,8 @@
 {:else}
 	{#if $showControls}
 		<PaneResizer
-			class="relative flex items-center justify-center group border-l border-gray-50 dark:border-gray-850/30 hover:border-gray-200 dark:hover:border-gray-800 transition z-20"
+			class="relative flex items-center justify-center group border-l transition z-20"
+		style="border-color: rgba(69,69,69,0.4);"
 			id="controls-resizer"
 		>
 			<div
@@ -402,17 +410,14 @@
 			if (paneReady) showControls.set(false);
 		}}
 		collapsible={true}
-		class="z-10 bg-white dark:bg-gray-850"
+		class="z-10"
+		style="background: var(--ember-charcoal);"
 	>
 		{#if $showControls}
 			<div class="flex max-h-full min-h-full">
 				<div
-					class="w-full {specialPanel && !$showCallOverlay
-						? ' '
-						: 'bg-white dark:shadow-lg dark:bg-gray-850'} z-40 pointer-events-auto {activeTab ===
-					'files'
-						? ''
-						: 'overflow-y-auto'} scrollbar-hidden"
+					class="w-full z-40 pointer-events-auto {activeTab === 'files' ? '' : 'overflow-y-auto'} scrollbar-hidden"
+					style="{specialPanel && !$showCallOverlay ? '' : 'background: var(--ember-charcoal);'}"
 					id="controls-container"
 				>
 					{#if $showCallOverlay}
@@ -439,10 +444,8 @@
 								<div class="flex gap-1 min-w-0 overflow-x-auto scrollbar-hidden">
 									{#if showControlsTab}
 										<button
-											class="px-2.5 py-1 text-sm rounded-lg transition whitespace-nowrap {activeTab ===
-											'controls'
-												? 'bg-gray-100 dark:bg-gray-800 font-medium text-gray-900 dark:text-white'
-												: 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}"
+											class="px-2.5 py-1 text-sm rounded-lg transition whitespace-nowrap {activeTab === 'controls' ? 'font-medium' : ''}"
+											style="{activeTab === 'controls' ? 'background: var(--ember-ash); color: var(--ember-text-primary);' : 'color: var(--ember-text-tertiary);'}"
 											on:click={() => (activeTab = 'controls')}
 										>
 											{$i18n.t('Controls')}
@@ -450,10 +453,8 @@
 									{/if}
 									{#if showFilesTab}
 										<button
-											class="px-2.5 py-1 text-sm rounded-lg transition whitespace-nowrap {activeTab ===
-											'files'
-												? 'bg-gray-100 dark:bg-gray-800 font-medium text-gray-900 dark:text-white'
-												: 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}"
+											class="px-2.5 py-1 text-sm rounded-lg transition whitespace-nowrap {activeTab === 'files' ? 'font-medium' : ''}"
+											style="{activeTab === 'files' ? 'background: var(--ember-ash); color: var(--ember-text-primary);' : 'color: var(--ember-text-tertiary);'}"
 											on:click={() => (activeTab = 'files')}
 										>
 											{$i18n.t('Files')}
@@ -461,10 +462,8 @@
 									{/if}
 									{#if showOverviewTab}
 										<button
-											class="px-2.5 py-1 text-sm rounded-lg transition whitespace-nowrap {activeTab ===
-											'overview'
-												? 'bg-gray-100 dark:bg-gray-800 font-medium text-gray-900 dark:text-white'
-												: 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}"
+											class="px-2.5 py-1 text-sm rounded-lg transition whitespace-nowrap {activeTab === 'overview' ? 'font-medium' : ''}"
+											style="{activeTab === 'overview' ? 'background: var(--ember-ash); color: var(--ember-text-primary);' : 'color: var(--ember-text-tertiary);'}"
 											on:click={() => (activeTab = 'overview')}
 										>
 											{$i18n.t('Overview')}
@@ -472,7 +471,8 @@
 									{/if}
 								</div>
 								<button
-									class="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition text-gray-500 dark:text-gray-400"
+									class="p-1 rounded-lg transition"
+									style="color: var(--ember-text-tertiary);"
 									on:click={() => showControls.set(false)}
 									aria-label={$i18n.t('Close')}
 								>

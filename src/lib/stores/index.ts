@@ -91,6 +91,11 @@ export const showArchivedChats = writable(false);
 export const showChangelog = writable(false);
 
 export const showControls = writable(false);
+export const showRightSidebar = writable(
+	typeof localStorage !== 'undefined'
+		? localStorage.getItem('ember-right-sidebar-open') !== 'false'
+		: true
+);
 export const showEmbeds = writable(false);
 export const showOverview = writable(false);
 export const showArtifacts = writable(false);

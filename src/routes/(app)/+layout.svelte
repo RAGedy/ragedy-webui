@@ -41,11 +41,13 @@
 	} from '$lib/stores';
 
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
+	import RightSidebar from '$lib/components/layout/RightSidebar.svelte';
 	import SettingsModal from '$lib/components/chat/SettingsModal.svelte';
 	import ChangelogModal from '$lib/components/ChangelogModal.svelte';
 	import AccountPending from '$lib/components/layout/Overlay/AccountPending.svelte';
 	import UpdateInfoToast from '$lib/components/layout/UpdateInfoToast.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
+	import { showRightSidebar } from '$lib/stores';
 	import { Shortcut, shortcuts } from '$lib/shortcuts';
 
 	const i18n = getContext('i18n');
@@ -350,6 +352,12 @@
 			localStorage.showControls = value ? 'true' : 'false';
 		});
 
+		// Persist right sidebar open/close state
+		showRightSidebar.set(!$mobile ? localStorage.getItem('ember-right-sidebar-open') !== 'false' : false);
+		showRightSidebar.subscribe((value) => {
+			localStorage.setItem('ember-right-sidebar-open', value ? 'true' : 'false');
+		});
+
 		await tick();
 
 		loaded = true;
@@ -383,7 +391,8 @@
 {#if $user}
 	<div class="app relative">
 		<div
-			class=" text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900 h-screen max-h-[100dvh] overflow-auto flex flex-row justify-end"
+			class="h-screen max-h-[100dvh] flex overflow-hidden"
+			style="background: var(--ember-void);"
 		>
 			{#if !['user', 'admin'].includes($user?.role)}
 				<AccountPending />
@@ -391,29 +400,40 @@
 				{#if localDBChats.length > 0}
 					<div class="fixed w-full h-full flex z-50">
 						<div
-							class="absolute w-full h-full backdrop-blur-md bg-white/20 dark:bg-gray-900/50 flex justify-center"
+							class="absolute w-full h-full backdrop-blur-md flex justify-center"
+							style="background: rgba(8,8,8,0.85);"
 						>
 							<div class="m-auto pb-44 flex flex-col justify-center">
 								<div class="max-w-md">
-									<div class="text-center dark:text-white text-2xl font-medium z-50">
+									<div
+										class="text-center text-2xl font-medium z-50"
+										style="color: var(--ember-text-primary);"
+									>
 										{$i18n.t('Important Update')}<br />
 										{$i18n.t('Action Required for Chat Log Storage')}
 									</div>
 
-									<div class=" mt-4 text-center text-sm dark:text-gray-200 w-full">
+									<div
+										class="mt-4 text-center text-sm w-full"
+										style="color: var(--ember-text-secondary);"
+									>
 										{$i18n.t(
 											"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through"
 										)}
-										<span class="font-medium dark:text-white"
-											>{$i18n.t('Settings')} > {$i18n.t('Chats')} > {$i18n.t('Import Chats')}</span
-										>. {$i18n.t(
+										<span
+											class="font-medium"
+											style="color: var(--ember-text-primary);"
+										>
+											{$i18n.t('Settings')} > {$i18n.t('Chats')} > {$i18n.t('Import Chats')}
+										</span>. {$i18n.t(
 											'This ensures that your valuable conversations are securely saved to your backend database. Thank you!'
 										)}
 									</div>
 
-									<div class=" mt-6 mx-auto relative group w-fit">
+									<div class="mt-6 mx-auto relative group w-fit">
 										<button
-											class="relative z-20 flex px-5 py-2 rounded-full bg-white border border-gray-100 dark:border-none hover:bg-gray-100 transition font-medium text-sm"
+											class="ember-glow relative z-20 flex px-5 py-2 rounded-lg font-medium text-sm text-white transition-colors"
+											style="background: var(--ember-flame);"
 											on:click={async () => {
 												let blob = new Blob([JSON.stringify(localDBChats)], {
 													type: 'application/json'
@@ -431,7 +451,8 @@
 										</button>
 
 										<button
-											class="text-xs text-center w-full mt-2 text-gray-400 underline"
+											class="text-xs text-center w-full mt-2 underline"
+											style="color: var(--ember-text-tertiary);"
 											on:click={async () => {
 												localDBChats = [];
 											}}>{$i18n.t('Close')}</button
@@ -443,19 +464,22 @@
 					</div>
 				{/if}
 
+				<!-- Left Sidebar -->
 				<Sidebar />
 
-				{#if loaded}
-					<slot />
-				{:else}
-					<div
-						class="w-full flex-1 h-full flex items-center justify-center {$showSidebar
-							? '  md:max-w-[calc(100%-var(--sidebar-width))]'
-							: ' '}"
-					>
-						<Spinner className="size-5" />
-					</div>
-				{/if}
+				<!-- Main Content -->
+				<div class="flex-1 flex flex-col min-w-0 ember-content-gradient">
+					{#if loaded}
+						<slot />
+					{:else}
+						<div class="w-full flex-1 h-full flex items-center justify-center">
+							<Spinner className="size-5" />
+						</div>
+					{/if}
+				</div>
+
+				<!-- Right Sidebar -->
+				<RightSidebar />
 			{/if}
 		</div>
 	</div>

@@ -49,88 +49,92 @@
 	}
 </script>
 
-<div class="flex flex-col w-full items-start">
+<div class="flex flex-row items-center gap-1.5">
 	{#each selectedModels as selectedModel, selectedModelIdx}
-		<div class="flex w-full max-w-fit">
-			<div class="overflow-hidden w-full">
-				<div class="max-w-full {($settings?.highContrastMode ?? false) ? 'm-1' : 'mr-1'}">
-					<Selector
-						id={`${selectedModelIdx}`}
-						placeholder={$i18n.t('Select a model')}
-						items={$models.map((model) => ({
-							value: model.id,
-							label: model.name,
-							model: model
-						}))}
-						{pinModelHandler}
-						bind:value={selectedModel}
-					/>
-				</div>
+		<div
+			class="ember-glow-subtle flex items-center gap-1.5 px-2.5 rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
+			style="
+				height: 36px;
+				min-width: 140px;
+				background: var(--ember-stone);
+				border: 1px solid transparent;
+				border-radius: 8px;
+			"
+		>
+			<div class="overflow-hidden flex-1 min-w-0">
+				<Selector
+					id={`${selectedModelIdx}`}
+					placeholder={$i18n.t('Select a model')}
+					items={$models.map((model) => ({
+						value: model.id,
+						label: model.name,
+						model: model
+					}))}
+					{pinModelHandler}
+					bind:value={selectedModel}
+				/>
 			</div>
 
 			{#if $user?.role === 'admin' || ($user?.permissions?.chat?.multiple_models ?? true)}
 				{#if selectedModelIdx === 0}
-					<div
-						class="  self-center mx-1 disabled:text-gray-600 disabled:hover:text-gray-600 -translate-y-[0.5px]"
-					>
-						<Tooltip content={$i18n.t('Add Model')}>
-							<button
-								class=" "
-								{disabled}
-								on:click={() => {
-									selectedModels = [...selectedModels, ''];
-								}}
-								aria-label="Add Model"
+					<Tooltip content={$i18n.t('Add Model')}>
+						<button
+							class="flex items-center justify-center shrink-0 rounded transition-colors hover:bg-[var(--ember-ash)] disabled:opacity-40"
+							style="width: 20px; height: 20px;"
+							disabled={disabled || selectedModels.length >= 3}
+							on:click={() => {
+								selectedModels = [...selectedModels, ''];
+							}}
+							aria-label="Add Model"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="2"
+								stroke="currentColor"
+								class="size-3.5"
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="2"
-									stroke="currentColor"
-									class="size-3.5"
-								>
-									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
-								</svg>
-							</button>
-						</Tooltip>
-					</div>
+								<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+							</svg>
+						</button>
+					</Tooltip>
 				{:else}
-					<div
-						class="  self-center mx-1 disabled:text-gray-600 disabled:hover:text-gray-600 -translate-y-[0.5px]"
-					>
-						<Tooltip content={$i18n.t('Remove Model')}>
-							<button
-								{disabled}
-								on:click={() => {
-									selectedModels.splice(selectedModelIdx, 1);
-									selectedModels = selectedModels;
-								}}
-								aria-label="Remove Model"
+					<Tooltip content={$i18n.t('Remove Model')}>
+						<button
+							class="flex items-center justify-center shrink-0 rounded transition-colors hover:bg-[var(--ember-ash)] disabled:opacity-40"
+							style="width: 20px; height: 20px;"
+							{disabled}
+							on:click={() => {
+								selectedModels.splice(selectedModelIdx, 1);
+								selectedModels = selectedModels;
+							}}
+							aria-label="Remove Model"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="2"
+								stroke="currentColor"
+								class="size-3"
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="2"
-									stroke="currentColor"
-									class="size-3"
-								>
-									<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
-								</svg>
-							</button>
-						</Tooltip>
-					</div>
+								<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
+							</svg>
+						</button>
+					</Tooltip>
 				{/if}
 			{/if}
 		</div>
 	{/each}
-</div>
 
-{#if showSetDefault}
-	<div
-		class="relative text-left mt-[1px] ml-1 text-[0.7rem] text-gray-600 dark:text-gray-400 font-primary"
-	>
-		<button on:click={saveDefaultModel}> {$i18n.t('Set as default')}</button>
-	</div>
-{/if}
+	{#if showSetDefault}
+		<button
+			class="shrink-0 text-[0.65rem] transition-colors"
+			style="color: var(--ember-text-tertiary);"
+			on:click={saveDefaultModel}
+		>
+			{$i18n.t('Set as default')}
+		</button>
+	{/if}
+</div>

@@ -72,7 +72,7 @@
 	$: models = selectedModels.map((id) => $_models.find((m) => m.id === id));
 </script>
 
-<div class="m-auto w-full max-w-6xl px-2 @2xl:px-20 translate-y-6 py-24 text-center">
+<div class="m-auto w-full max-w-6xl px-2 @2xl:px-20 translate-y-6 py-24 text-center" style="color: var(--ember-text-primary);">
 	{#if $temporaryChatEnabled}
 		<Tooltip
 			content={$i18n.t("This chat won't appear in history and your messages will not be saved.")}
@@ -86,9 +86,29 @@
 	{/if}
 
 	<div
-		class="w-full text-3xl text-gray-800 dark:text-gray-100 text-center flex items-center gap-4 font-primary"
+		class="w-full text-3xl text-center flex items-center gap-4 font-primary" style="color: var(--ember-text-primary);"
 	>
 		<div class="w-full flex flex-col justify-center items-center">
+			{#if !$selectedFolder}
+				<!-- Ember flame icon header -->
+				<div class="flex flex-col items-center mb-6" in:fade={{ duration: 200 }}>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="64"
+						height="64"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="var(--ember-flame)"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						style="animation: ember-logo-pulse 5s ease-in-out infinite alternate;"
+						aria-hidden="true"
+					>
+						<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+					</svg>
+				</div>
+			{/if}
 			{#if $selectedFolder}
 				<FolderTitle
 					folder={$selectedFolder}
@@ -136,7 +156,7 @@
 					</div>
 
 					<div
-						class=" text-3xl @sm:text-3xl line-clamp-1 flex items-center"
+						class=" text-3xl @sm:text-3xl line-clamp-1 flex items-center" style="color: var(--ember-text-primary);"
 						in:fade={{ duration: 100 }}
 					>
 						{#if models[selectedModelIdx]?.name}
@@ -168,7 +188,7 @@
 								placement="top"
 							>
 								<div
-									class="mt-0.5 px-2 text-sm font-normal text-gray-500 dark:text-gray-400 line-clamp-2 max-w-xl markdown"
+									class="mt-0.5 px-2 text-sm font-normal line-clamp-2 max-w-xl markdown" style="color: var(--ember-text-tertiary);"
 								>
 									{@html marked.parse(
 										sanitizeResponseContent(

@@ -1,0 +1,197 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Ember Surface Tokens */
+  --ember-void: #080808;
+  --ember-shadow: #101010;
+  --ember-charcoal: #181818;
+  --ember-graphite: #212121;
+  --ember-stone: #2a2a2a;
+  --ember-ash: #363636;
+  --ember-cinder: #454545;
+
+  /* Ember Text Tokens */
+  --ember-text-primary: #f0ede8;
+  --ember-text-secondary: #b8b4ae;
+  --ember-text-tertiary: #7a7570;
+  --ember-text-inverse: #0a0a0a;
+
+  /* Ember Accent Tokens */
+  --ember-core: #e83800;
+  --ember-flame: #ff4d00;
+  --ember-glow: #ff7430;
+  --ember-spark: #ff9a47;
+  --ember-flare: #ffc84a;
+  --ember-ember: #ffde80;
+
+  /* Semantic */
+  --ember-success: #4caf7a;
+  --ember-warning: #f0a830;
+  --ember-error: #e84040;
+  --ember-info: #c0956a;
+
+  /* Map to standard theme vars */
+  --font-size: 16px;
+  --background: var(--ember-void);
+  --foreground: var(--ember-text-primary);
+  --card: var(--ember-stone);
+  --card-foreground: var(--ember-text-primary);
+  --popover: var(--ember-stone);
+  --popover-foreground: var(--ember-text-primary);
+  --primary: var(--ember-flame);
+  --primary-foreground: #ffffff;
+  --secondary: var(--ember-graphite);
+  --secondary-foreground: var(--ember-text-primary);
+  --muted: var(--ember-ash);
+  --muted-foreground: var(--ember-text-secondary);
+  --accent: var(--ember-stone);
+  --accent-foreground: var(--ember-text-primary);
+  --destructive: var(--ember-error);
+  --destructive-foreground: #ffffff;
+  --border: var(--ember-cinder);
+  --input: var(--ember-stone);
+  --input-background: var(--ember-stone);
+  --switch-background: var(--ember-ash);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: var(--ember-flame);
+  --radius: 0.5rem;
+
+  --sidebar: var(--ember-shadow);
+  --sidebar-foreground: var(--ember-text-primary);
+  --sidebar-primary: var(--ember-flame);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--ember-stone);
+  --sidebar-accent-foreground: var(--ember-text-primary);
+  --sidebar-border: var(--ember-cinder);
+  --sidebar-ring: var(--ember-flame);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Ember colors for Tailwind */
+  --color-ember-void: var(--ember-void);
+  --color-ember-shadow: var(--ember-shadow);
+  --color-ember-charcoal: var(--ember-charcoal);
+  --color-ember-graphite: var(--ember-graphite);
+  --color-ember-stone: var(--ember-stone);
+  --color-ember-ash: var(--ember-ash);
+  --color-ember-cinder: var(--ember-cinder);
+  --color-ember-text-primary: var(--ember-text-primary);
+  --color-ember-text-secondary: var(--ember-text-secondary);
+  --color-ember-text-tertiary: var(--ember-text-tertiary);
+  --color-ember-core: var(--ember-core);
+  --color-ember-flame: var(--ember-flame);
+  --color-ember-glow: var(--ember-glow);
+  --color-ember-spark: var(--ember-spark);
+  --color-ember-flare: var(--ember-flare);
+  --color-ember-ember: var(--ember-ember);
+  --color-ember-success: var(--ember-success);
+  --color-ember-warning: var(--ember-warning);
+  --color-ember-error: var(--ember-error);
+  --color-ember-info: var(--ember-info);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    background: var(--ember-void);
+    color: var(--ember-text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-family: 'Archivo', 'Inter', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+  }
+
+  h2 {
+    font-family: 'Archivo', 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.3px;
+  }
+
+  h3 {
+    font-family: 'Archivo', 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.2px;
+  }
+
+  h4 {
+    font-family: 'Archivo', 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.1px;
+  }
+
+  label {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.1px;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+
+  code, pre {
+    font-family: 'JetBrains Mono', Menlo, Monaco, monospace;
+  }
+}

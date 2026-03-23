@@ -12,6 +12,7 @@
 		showArchivedChats,
 		showControls,
 		showSidebar,
+		showRightSidebar,
 		temporaryChatEnabled,
 		user
 	} from '$lib/stores';
@@ -73,195 +74,144 @@
 />
 
 <nav
-	class="sticky top-0 z-30 w-full {chat?.id
-		? 'pt-0.5 pb-1'
-		: 'pt-1 pb-1'} -mb-12 flex flex-col items-center drag-region"
+	class="sticky top-0 z-30 w-full flex flex-col items-center drag-region"
+	style="background: linear-gradient(to bottom, #212121 0%, #212121 60%, transparent 100%);"
 >
-	<div class="flex items-center w-full pl-1.5 pr-1">
-		<div
-			id="navbar-bg-gradient-to-b"
-			class="{chat?.id
-				? 'visible'
-				: 'invisible'} bg-linear-to-b via-40% to-97% from-white/90 via-white/50 to-transparent dark:from-gray-900/90 dark:via-gray-900/50 dark:to-transparent pointer-events-none absolute inset-0 -bottom-10 z-[-1]"
-		></div>
+	<!-- ── Ember Chat Navbar (56px) ── -->
+	<div class="flex items-center w-full px-4 gap-3" style="height: 56px;">
 
-		<div class=" flex max-w-full w-full mx-auto px-1.5 md:px-2 pt-0.5 bg-transparent">
-			<div class="flex items-center w-full max-w-full">
-				{#if $mobile && !$showSidebar}
-					<div
-						class="-translate-x-0.5 mr-1 mt-1 self-start flex flex-none items-center text-gray-600 dark:text-gray-400"
-					>
-						<Tooltip content={$showSidebar ? $i18n.t('Close Sidebar') : $i18n.t('Open Sidebar')}>
-							<button
-								class=" cursor-pointer flex rounded-lg hover:bg-gray-100 dark:hover:bg-gray-850 transition"
-								on:click={() => {
-									showSidebar.set(!$showSidebar);
-								}}
-							>
-								<div class=" self-center p-1.5">
-									<Sidebar />
-								</div>
-							</button>
-						</Tooltip>
-					</div>
-				{/if}
-
-				<div
-					class="flex-1 overflow-hidden max-w-full mt-0.5 py-0.5
-			{$showSidebar ? 'ml-1' : ''}
-			"
+		<!-- Left: sidebar hamburger (when sidebar closed) + model selector pills -->
+		<div class="flex items-center gap-2 shrink-0">
+			{#if !$showSidebar}
+				<button
+					on:click={() => showSidebar.set(true)}
+					class="flex items-center justify-center shrink-0 rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
+					style="width: 32px; height: 32px;"
+					aria-label={$i18n.t('Open Sidebar')}
 				>
-					{#if showModelSelector}
-						<ModelSelector bind:selectedModels showSetDefault={!shareEnabled} />
-					{/if}
-				</div>
+					<!-- Menu icon -->
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ember-text-secondary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+				</button>
+			{/if}
 
-				<div class="self-start flex flex-none items-center text-gray-600 dark:text-gray-400">
-					<!-- <div class="md:hidden flex self-center w-[1px] h-5 mx-2 bg-gray-300 dark:bg-stone-700" /> -->
+			{#if showModelSelector}
+				<ModelSelector bind:selectedModels showSetDefault={!shareEnabled} />
+			{/if}
+		</div>
 
-					{#if $user?.role === 'user' ? ($user?.permissions?.chat?.temporary ?? true) && !($user?.permissions?.chat?.temporary_enforced ?? false) : true}
-						{#if !chat?.id}
-							<Tooltip content={$i18n.t(`Temporary Chat`)}>
-								<button
-									class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
-									id="temporary-chat-button"
-									on:click={async () => {
-										if (($settings?.temporaryChatByDefault ?? false) && $temporaryChatEnabled) {
-											// for proper initNewChat handling
-											await temporaryChatEnabled.set(null);
-										} else {
-											await temporaryChatEnabled.set(!$temporaryChatEnabled);
-										}
+		<!-- Center: chat title -->
+		<div class="flex-1 flex justify-center min-w-0 overflow-hidden">
+			{#if chat?.title && chat?.id}
+				<span
+					class="truncate max-w-[300px]"
+					style="font-size: 14px; color: var(--ember-text-secondary);"
+				>
+					{chat.title}
+				</span>
+			{/if}
+		</div>
 
-										if ($page.url.pathname !== '/') {
-											await goto('/');
-										}
-
-										// add 'temporary-chat=true' to the URL
-										if ($temporaryChatEnabled) {
-											window.history.replaceState(null, '', '?temporary-chat=true');
-										} else {
-											window.history.replaceState(null, '', location.pathname);
-										}
-									}}
-								>
-									<div class=" m-auto self-center">
-										{#if $temporaryChatEnabled}
-											<ChatBubbleDottedChecked className=" size-4.5" strokeWidth="1.5" />
-										{:else}
-											<ChatBubbleDotted className=" size-4.5" strokeWidth="1.5" />
-										{/if}
-									</div>
-								</button>
-							</Tooltip>
-						{:else if $temporaryChatEnabled}
-							<Tooltip content={$i18n.t(`Save Chat`)}>
-								<button
-									class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
-									id="save-temporary-chat-button"
-									on:click={async () => {
-										onSaveTempChat();
-									}}
-								>
-									<div class=" m-auto self-center">
-										<ChatCheck className=" size-4.5" strokeWidth="1.5" />
-									</div>
-								</button>
-							</Tooltip>
-						{/if}
-					{/if}
-
-					{#if $mobile && !$temporaryChatEnabled && chat && chat.id}
-						<Tooltip content={$i18n.t('New Chat')}>
-							<button
-								class=" flex {$showSidebar
-									? 'md:hidden'
-									: ''} cursor-pointer px-2 py-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-850 transition"
-								on:click={() => {
-									initNewChat();
-								}}
-								aria-label="New Chat"
-							>
-								<div class=" m-auto self-center">
-									<ChatPlus className=" size-4.5" strokeWidth="1.5" />
-								</div>
-							</button>
-						</Tooltip>
-					{/if}
-
-					{#if shareEnabled && chat && (chat.id || $temporaryChatEnabled)}
-						<Menu
-							{chat}
-							{shareEnabled}
-							shareHandler={() => {
-								showShareChatModal = !showShareChatModal;
-							}}
-							archiveChatHandler={() => {
-								archiveChatHandler(chat.id);
-							}}
-							{moveChatHandler}
-						>
-							<button
-								class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
-								id="chat-context-menu-button"
-							>
-								<div class=" m-auto self-center">
-									<EllipsisHorizontal className=" size-5" strokeWidth="1.5" />
-								</div>
-							</button>
-						</Menu>
-					{/if}
-
-					{#if $user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)}
-						<Tooltip content={$i18n.t('Controls')}>
-							<button
-								class=" flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
-								on:click={async () => {
-									await showControls.set(!$showControls);
-								}}
-								aria-label="Controls"
-							>
-								<div class=" m-auto self-center">
-									<Knobs className=" size-5" strokeWidth="1" />
-								</div>
-							</button>
-						</Tooltip>
-					{/if}
-
-					{#if $user !== undefined && $user !== null}
-						<UserMenu
-							className="max-w-[240px]"
-							role={$user?.role}
-							help={true}
-							on:show={(e) => {
-								if (e.detail === 'archived-chat') {
-									showArchivedChats.set(true);
+		<!-- Right: action buttons -->
+		<div class="flex items-center gap-1">
+			<!-- Temporary Chat toggle -->
+			{#if $user?.role === 'user' ? ($user?.permissions?.chat?.temporary ?? true) && !($user?.permissions?.chat?.temporary_enforced ?? false) : true}
+				{#if !chat?.id}
+					<Tooltip content={$i18n.t('Temporary Chat')}>
+						<button
+							id="temporary-chat-button"
+							class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)] {$temporaryChatEnabled ? 'bg-[rgba(255,77,0,0.1)]' : ''}"
+							style="width: 32px; height: 32px;"
+							on:click={async () => {
+								if (($settings?.temporaryChatByDefault ?? false) && $temporaryChatEnabled) {
+									await temporaryChatEnabled.set(null);
+								} else {
+									await temporaryChatEnabled.set(!$temporaryChatEnabled);
+								}
+								if ($page.url.pathname !== '/') { await goto('/'); }
+								if ($temporaryChatEnabled) {
+									window.history.replaceState(null, '', '?temporary-chat=true');
+								} else {
+									window.history.replaceState(null, '', location.pathname);
 								}
 							}}
 						>
-							<div
-								class="select-none flex rounded-xl p-1.5 w-full hover:bg-gray-50 dark:hover:bg-gray-850 transition"
-							>
-								<div class=" self-center">
-									<span class="sr-only">{$i18n.t('User menu')}</span>
-									<img
-										src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
-										class="size-6 object-cover rounded-full"
-										alt=""
-										draggable="false"
-									/>
-								</div>
-							</div>
-						</UserMenu>
-					{/if}
-				</div>
-			</div>
+							{#if $temporaryChatEnabled}
+								<ChatBubbleDottedChecked className="size-4.5" strokeWidth="1.5" />
+							{:else}
+								<ChatBubbleDotted className="size-4.5" strokeWidth="1.5" />
+							{/if}
+						</button>
+					</Tooltip>
+				{:else if $temporaryChatEnabled}
+					<Tooltip content={$i18n.t('Save Chat')}>
+						<button
+							id="save-temporary-chat-button"
+							class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
+							style="width: 32px; height: 32px;"
+							on:click={async () => { onSaveTempChat(); }}
+						>
+							<ChatCheck className="size-4.5" strokeWidth="1.5" />
+						</button>
+					</Tooltip>
+				{/if}
+			{/if}
+
+			<!-- Share / Menu (when chat exists) -->
+			{#if shareEnabled && chat && (chat.id || $temporaryChatEnabled)}
+				<Menu
+					{chat}
+					{shareEnabled}
+					shareHandler={() => { showShareChatModal = !showShareChatModal; }}
+					archiveChatHandler={() => { archiveChatHandler(chat.id); }}
+					{moveChatHandler}
+				>
+					<button
+						id="chat-context-menu-button"
+						class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
+						style="width: 32px; height: 32px;"
+					>
+						<!-- Share2 icon -->
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ember-text-secondary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+					</button>
+				</Menu>
+			{/if}
+
+			<!-- Controls toggle (SlidersHorizontal) -->
+			{#if $user?.role === 'admin' || ($user?.permissions?.chat?.controls ?? true)}
+				<Tooltip content={$i18n.t('Controls')}>
+					<button
+						class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)] {$showControls ? 'bg-[rgba(255,77,0,0.1)]' : ''}"
+						style="width: 32px; height: 32px;"
+						on:click={async () => { await showControls.set(!$showControls); }}
+						aria-label={$i18n.t('Controls')}
+					>
+						<AdjustmentsHorizontal className="size-4.5" strokeWidth="1.5" />
+					</button>
+				</Tooltip>
+			{/if}
+
+			<!-- Right Sidebar toggle (PanelRight) -->
+			<Tooltip content={$i18n.t('Panel')}>
+				<button
+					class="flex items-center justify-center rounded-lg transition-colors {$showRightSidebar ? 'ember-glow-subtle' : 'hover:bg-[var(--ember-ash)]'}"
+					style="
+						width: 32px;
+						height: 32px;
+						background: {$showRightSidebar ? 'rgba(255,77,0,0.1)' : 'transparent'};
+					"
+					on:click={() => showRightSidebar.set(!$showRightSidebar)}
+					aria-label={$i18n.t('Toggle Panel')}
+				>
+					<!-- PanelRight icon -->
+					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{$showRightSidebar ? 'var(--ember-flame)' : 'var(--ember-text-tertiary)'}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="15" x2="15" y1="3" y2="21"/></svg>
+				</button>
+			</Tooltip>
 		</div>
 	</div>
 
 	{#if $temporaryChatEnabled && ($chatId ?? '').startsWith('local:')}
-		<div class=" w-full z-30 text-center">
-			<div class="text-xs text-gray-500">{$i18n.t('Temporary Chat')}</div>
+		<div class="w-full z-30 text-center">
+			<div class="text-xs" style="color: var(--ember-text-tertiary);">{$i18n.t('Temporary Chat')}</div>
 		</div>
 	{/if}
 

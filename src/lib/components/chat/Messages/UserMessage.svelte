@@ -228,7 +228,7 @@
 			{/if}
 
 			{#if edit === true}
-				<div class=" w-full bg-gray-50 dark:bg-gray-800 rounded-3xl px-5 py-3 mb-2">
+				<div class=" w-full rounded-2xl px-5 py-3 mb-2" style="background: var(--ember-stone); border: 1px solid var(--ember-cinder);">
 					{#if (editedFiles ?? []).length > 0}
 						<div class="flex items-center flex-wrap gap-2 -mx-2 mb-1">
 							{#each editedFiles as file, fileIdx}
@@ -367,10 +367,8 @@
 					<div class="flex {($settings?.chatBubble ?? true) ? 'justify-end pb-1' : 'w-full'}">
 						<div
 							class="rounded-3xl {($settings?.chatBubble ?? true)
-								? `max-w-[90%] px-4 py-1.5  bg-gray-50 dark:bg-gray-850 ${
-										message.files ? 'rounded-tr-lg' : ''
-									}`
-								: ' w-full'}"
+								? `max-w-[90%] px-4 py-1.5 ${message.files ? 'rounded-tr-lg' : ''}`
+								: ' w-full'}" style="{($settings?.chatBubble ?? true) ? 'background: var(--ember-stone); border-radius: 16px 16px 4px 16px; box-shadow: inset -2px 0 0 rgba(255,77,0,0.2);' : ''}"
 						>
 							{#if message.content}
 								<Markdown
