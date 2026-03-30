@@ -12,6 +12,44 @@ from open_webui.config import DEFAULT_RAG_TEMPLATE
 
 log = logging.getLogger(__name__)
 
+_TITLE_KEYCAP_EMOJI_RE = re.compile(r"[#*0-9]\ufe0f?\u20e3")
+_TITLE_EMOJI_RE = re.compile(
+    "["
+    "\U0001F1E6-\U0001F1FF"
+    "\U0001F300-\U0001F5FF"
+    "\U0001F600-\U0001F64F"
+    "\U0001F680-\U0001F6FF"
+    "\U0001F700-\U0001F77F"
+    "\U0001F780-\U0001F7FF"
+    "\U0001F800-\U0001F8FF"
+    "\U0001F900-\U0001F9FF"
+    "\U0001FA00-\U0001FAFF"
+    "\u2600-\u26FF"
+    "\u2700-\u27BF"
+    "]",
+    flags=re.UNICODE,
+)
+_TITLE_EMOJI_RESIDUE_RE = re.compile(
+    "["
+    "\u200d"
+    "\ufe0e\ufe0f"
+    "\u20e3"
+    "\U0001F3FB-\U0001F3FF"
+    "\U000E0020-\U000E007F"
+    "]",
+    flags=re.UNICODE,
+)
+
+
+def sanitize_generated_chat_title(title: Optional[str]) -> str:
+    if not title:
+        return ""
+
+    sanitized = _TITLE_KEYCAP_EMOJI_RE.sub(" ", str(title))
+    sanitized = _TITLE_EMOJI_RE.sub(" ", sanitized)
+    sanitized = _TITLE_EMOJI_RESIDUE_RE.sub("", sanitized)
+    return re.sub(r"\s+", " ", sanitized).strip()
+
 
 def get_task_model_id(
     default_model_id: str, task_model: str, task_model_external: str, models

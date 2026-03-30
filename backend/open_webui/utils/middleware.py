@@ -79,6 +79,7 @@ from open_webui.utils.chat import generate_chat_completion
 from open_webui.utils.task import (
     get_task_model_id,
     rag_template,
+    sanitize_generated_chat_title,
     tools_function_calling_generation_template,
 )
 from open_webui.utils.misc import (
@@ -3041,6 +3042,10 @@ async def background_tasks_handler(ctx):
                             if not title:
                                 title = messages[0].get("content", user_message)
 
+                            title = sanitize_generated_chat_title(title)
+                            if not title:
+                                title = "New Chat"
+
                             Chats.update_chat_title_by_id(metadata["chat_id"], title)
 
                             await event_emitter(
@@ -3050,15 +3055,18 @@ async def background_tasks_handler(ctx):
                                 }
                             )
 
-                    if title == None and len(messages) == 2:
+                    if title is None and len(messages) == 2:
                         title = messages[0].get("content", user_message)
+                        title = sanitize_generated_chat_title(title)
+                        if not title:
+                            title = "New Chat"
 
                         Chats.update_chat_title_by_id(metadata["chat_id"], title)
 
                         await event_emitter(
                             {
                                 "type": "chat:title",
-                                "data": message.get("content", user_message),
+                                "data": title,
                             }
                         )
 

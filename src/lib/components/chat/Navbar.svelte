@@ -82,7 +82,7 @@
 
 		<!-- Left: sidebar hamburger (when sidebar closed) + model selector pills -->
 		<div class="flex items-center gap-2 shrink-0">
-			{#if !$showSidebar}
+			{#if $mobile && !$showSidebar}
 				<button
 					on:click={() => showSidebar.set(true)}
 					class="flex items-center justify-center shrink-0 rounded-lg transition-colors hover:bg-[var(--ember-ash)]"

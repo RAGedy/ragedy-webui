@@ -1,5 +1,5 @@
 import { WEBUI_BASE_URL } from '$lib/constants';
-import { convertOpenApiToToolPayload } from '$lib/utils';
+import { convertOpenApiToToolPayload, removeEmojis } from '$lib/utils';
 import { getOpenAIModelsDirect } from './openai';
 
 export const getModels = async (
@@ -650,9 +650,12 @@ export const generateTitle = async (
 			// Step 5: Parse the JSON block
 			const parsed = JSON.parse(jsonResponse);
 
-			// Step 6: If there's a "tags" key, return the tags array; otherwise, return an empty array
+			// Step 6: If there's a "title" key, sanitize it and return text-only output
 			if (parsed && parsed.title) {
-				return parsed.title;
+				const sanitizedTitle = removeEmojis(String(parsed.title))
+					.replace(/\s+/g, ' ')
+					.trim();
+				return sanitizedTitle.length > 0 ? sanitizedTitle : null;
 			} else {
 				return null;
 			}

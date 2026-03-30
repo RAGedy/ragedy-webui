@@ -432,8 +432,8 @@
 			document.documentElement.style.setProperty('--sidebar-width', `${w}px`);
 		});
 
-		// Default: open on desktop (Ember design), closed on mobile
-		showSidebar.set(!$mobile ? localStorage.sidebar !== 'false' : false);
+		// Default: closed on desktop unless explicitly set to open; closed on mobile.
+		showSidebar.set(!$mobile ? localStorage.sidebar === 'true' : false);
 
 		const unsubscribers = [
 			mobile.subscribe((value) => {
@@ -505,13 +505,6 @@
 		window.addEventListener('focus', onFocus);
 		window.addEventListener('blur', onBlur);
 
-		const dropZone = document.getElementById('sidebar');
-		if (dropZone) {
-			dropZone.addEventListener('dragover', onDragOver);
-			dropZone.addEventListener('drop', onDrop);
-			dropZone.addEventListener('dragleave', onDragLeave);
-		}
-
 		const socketInstance = $socket;
 		socketInstance?.on('events', chatActiveEventHandler);
 
@@ -526,12 +519,6 @@
 
 			window.removeEventListener('focus', onFocus);
 			window.removeEventListener('blur', onBlur);
-
-			if (dropZone) {
-				dropZone.removeEventListener('dragover', onDragOver);
-				dropZone.removeEventListener('drop', onDrop);
-				dropZone.removeEventListener('dragleave', onDragLeave);
-			}
 
 			socketInstance?.off('events', chatActiveEventHandler);
 		};
@@ -681,6 +668,56 @@
 	}}
 />
 
+{#if !$showSidebar && !$mobile}
+	<aside
+		class="h-screen max-h-[100dvh] flex flex-col items-center relative select-none shrink-0"
+		style="
+			width: 56px;
+			background: var(--ember-shadow);
+		"
+		aria-label={$i18n.t('Sidebar')}
+	>
+		<div class="ember-stripe absolute right-0 top-0 bottom-0 z-10" style="width: 2px;" />
+
+		<div class="flex flex-col items-center gap-2 pt-3">
+			<Tooltip content={$i18n.t('Open Sidebar')}>
+				<button
+					on:click={() => showSidebar.set(true)}
+					class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
+					style="width: 32px; height: 32px;"
+					aria-label={$i18n.t('Open Sidebar')}
+				>
+					<Sidebar className="size-4.5" strokeWidth="1.5" />
+				</button>
+			</Tooltip>
+
+			<Tooltip content={$i18n.t('New Chat')}>
+				<a
+					href="/"
+					draggable="false"
+					on:click={newChatHandler}
+					class="ember-glow flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
+					style="width: 32px; height: 32px;"
+					aria-label={$i18n.t('New Chat')}
+				>
+					<PencilSquare className="size-4.5" strokeWidth="1.5" />
+				</a>
+			</Tooltip>
+
+			<Tooltip content={$i18n.t('Search')}>
+				<button
+					on:click={() => showSearch.set(true)}
+					class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
+					style="width: 32px; height: 32px;"
+					aria-label={$i18n.t('Search')}
+				>
+					<Search className="size-4.5" strokeWidth="1.5" />
+				</button>
+			</Tooltip>
+		</div>
+	</aside>
+{/if}
+
 {#if $showSidebar}
 <!-- ── Ember Left Sidebar ───────────────────────────── -->
 <aside
@@ -694,6 +731,9 @@
 	"
 	transition:slide={{ duration: 250, axis: 'x' }}
 	data-state={$showSidebar}
+	on:dragover={onDragOver}
+	on:drop={onDrop}
+	on:dragleave={onDragLeave}
 >
 	<!-- Right edge accent stripe -->
 	<div class="ember-stripe absolute right-0 top-0 bottom-0 z-10" style="width: 2px;" />
@@ -714,6 +754,18 @@
 			"
 		>Ember</span>
 		<div class="flex-1" />
+
+		<!-- Sidebar panel button -->
+		<Tooltip content={$i18n.t('Close Sidebar')}>
+			<button
+				on:click={() => showSidebar.set(false)}
+				class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
+				style="width: 32px; height: 32px;"
+				aria-label={$i18n.t('Close Sidebar')}
+			>
+				<Sidebar className="size-4.5" strokeWidth="1.5" />
+			</button>
+		</Tooltip>
 
 		<!-- New Chat button -->
 		<a
