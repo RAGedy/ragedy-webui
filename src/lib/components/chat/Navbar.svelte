@@ -12,7 +12,6 @@
 		showArchivedChats,
 		showControls,
 		showSidebar,
-		showRightSidebar,
 		temporaryChatEnabled,
 		user
 	} from '$lib/stores';
@@ -190,22 +189,6 @@
 				</Tooltip>
 			{/if}
 
-			<!-- Right Sidebar toggle (PanelRight) -->
-			<Tooltip content={$i18n.t('Panel')}>
-				<button
-					class="flex items-center justify-center rounded-lg transition-colors {$showRightSidebar ? 'ember-glow-subtle' : 'hover:bg-[var(--ember-ash)]'}"
-					style="
-						width: 32px;
-						height: 32px;
-						background: {$showRightSidebar ? 'rgba(255,77,0,0.1)' : 'transparent'};
-					"
-					on:click={() => showRightSidebar.set(!$showRightSidebar)}
-					aria-label={$i18n.t('Toggle Panel')}
-				>
-					<!-- PanelRight icon -->
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{$showRightSidebar ? 'var(--ember-flame)' : 'var(--ember-text-tertiary)'}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="15" x2="15" y1="3" y2="21"/></svg>
-				</button>
-			</Tooltip>
 		</div>
 	</div>
 

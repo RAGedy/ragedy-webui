@@ -1,103 +1,268 @@
 <script lang="ts">
 	import { showRightSidebar } from '$lib/stores';
+	import Tooltip from '$lib/components/common/Tooltip.svelte';
+
+	import Note from '$lib/components/icons/Note.svelte';
+	import Folder from '$lib/components/icons/Folder.svelte';
+	import Wrench from '$lib/components/icons/Wrench.svelte';
+	import Bookmark from '$lib/components/icons/Bookmark.svelte';
+
+	import ProjectOverviewPanel from '$lib/components/layout/RightSidebar/ProjectOverviewPanel.svelte';
+	import FileIngestionPanel from '$lib/components/layout/RightSidebar/FileIngestionPanel.svelte';
+	import AgentBuilderPanel from '$lib/components/layout/RightSidebar/AgentBuilderPanel.svelte';
+	import BookmarksPanel from '$lib/components/layout/RightSidebar/BookmarksPanel.svelte';
+
+	type RightSidebarTab = 'project-overview' | 'files' | 'agent-builder' | 'bookmarks';
+
+	const tabs: {
+		id: RightSidebarTab;
+		label: string;
+		icon: any;
+	}[] = [
+		{ id: 'project-overview', label: 'Project Overview', icon: Note },
+		{ id: 'files', label: 'Files', icon: Folder },
+		{ id: 'agent-builder', label: 'Agent Builder', icon: Wrench },
+		{ id: 'bookmarks', label: 'Bookmarks', icon: Bookmark }
+	];
+
+	let activeTab: RightSidebarTab = 'project-overview';
+
+	if (typeof window !== 'undefined') {
+		localStorage.setItem('ember-right-sidebar-open', 'false');
+		showRightSidebar.set(false);
+	}
 </script>
 
 <aside
 	class="h-full relative shrink-0 overflow-hidden"
 	style="
-		width: {$showRightSidebar ? 320 : 0}px;
-		background: var(--ember-charcoal);
+		width: {$showRightSidebar ? 320 : 56}px;
+		background: var(--ember-shadow);
 		transition: width 250ms ease-in-out;
 		flex-shrink: 0;
 	"
 	aria-label="Right panel"
 >
 	<!-- Accent stripe on left edge -->
-	<div
-		class="ember-stripe absolute left-0 top-0 bottom-0 z-10"
-		style="width: 2px;"
-	/>
+	<div class="ember-stripe absolute left-0 top-0 bottom-0 z-10" style="width: 2px;"></div>
 
-	<div
-		style="
-			width: 320px;
-			opacity: {$showRightSidebar ? 1 : 0};
-			transition: opacity 150ms ease;
-			height: 100%;
-			display: flex;
-			flex-direction: column;
-		"
-	>
-		<!-- Header -->
+	<div class="relative h-full">
 		<div
-			class="flex items-center justify-between px-4 shrink-0"
+			class="absolute inset-0"
 			style="
-				height: 56px;
-				border-bottom: 1px solid rgba(69,69,69,0.4);
+				width: 320px;
+				opacity: {$showRightSidebar ? 1 : 0};
+				transition: opacity 150ms ease;
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+				pointer-events: {$showRightSidebar ? 'auto' : 'none'}
 			"
 		>
-			<span
+			<div
+				class="flex items-center px-3 shrink-0"
 				style="
-					font-family: 'Archivo', sans-serif;
-					font-size: 16px;
-					font-weight: 600;
-					color: var(--ember-text-tertiary);
+					height: 56px;
+					border-bottom: 0px solid rgba(69,69,69,0.4);
 				"
 			>
-				Panel
-			</span>
-			<button
-				on:click={() => showRightSidebar.set(false)}
-				class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
-				style="width: 32px; height: 32px;"
-				aria-label="Close panel"
-			>
-				<!-- ChevronRight icon -->
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="var(--ember-text-tertiary)"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"
+				<span
+					style="
+						font-size: 14px;
+						font-weight: 500;
+						color: var(--ember-text-primary);
+					"
 				>
-					<path d="m9 18 6-6-6-6" />
-				</svg>
-			</button>
+					Project Dashboard
+				</span>
+
+				<div class="flex-1" />
+
+				<Tooltip content="Close panel">
+					<button
+						type="button"
+						class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)] cursor-ew-resize"
+						style="
+							width: 32px;
+							height: 32px;
+							color: var(--ember-text-tertiary);
+						"
+						on:click={() => showRightSidebar.set(false)}
+						aria-label="Close panel"
+					>
+						<!-- Original panel icon (kept for easy revert)
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="18"
+							height="18"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+							<line x1="15" x2="15" y1="3" y2="21" />
+						</svg>
+						-->
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="18"
+							height="18"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<path d="m9 18 6-6-6-6" />
+						</svg>
+					</button>
+				</Tooltip>
+			</div>
+
+			<div
+				class="flex items-center gap-2 px-3 shrink-0"
+				style="
+					margin-top: -2px;
+					padding-bottom: 12px;
+					border-bottom: 1px solid rgba(69,69,69,0.4);
+				"
+			>
+				{#each tabs as tab (tab.id)}
+					<Tooltip content={tab.label}>
+						<button
+							type="button"
+							class="flex items-center justify-center rounded-lg transition-colors {activeTab ===
+							tab.id
+								? 'ember-glow-subtle'
+								: 'hover:bg-[var(--ember-ash)]'}"
+							style="
+								width: 32px;
+								height: 32px;
+								background: {activeTab === tab.id ? 'rgba(255,77,0,0.1)' : 'transparent'};
+								color: {activeTab === tab.id ? 'var(--ember-flame)' : 'var(--ember-text-tertiary)'};
+							"
+							on:click={() => {
+								activeTab = tab.id;
+							}}
+							aria-label={tab.label}
+						>
+							<svelte:component this={tab.icon} className="size-4.5" strokeWidth="1.5" />
+						</button>
+					</Tooltip>
+				{/each}
+			</div>
+
+			<div class="flex-1 min-h-0">
+				<div
+					class="h-full overflow-y-auto ember-scrollbar-hidden"
+					style="display: {activeTab === 'project-overview' ? 'block' : 'none'};"
+				>
+					<ProjectOverviewPanel />
+				</div>
+
+				<div
+					class="h-full overflow-y-auto ember-scrollbar-hidden"
+					style="display: {activeTab === 'files' ? 'block' : 'none'};"
+				>
+					<FileIngestionPanel />
+				</div>
+
+				<div
+					class="h-full overflow-y-auto ember-scrollbar-hidden"
+					style="display: {activeTab === 'agent-builder' ? 'block' : 'none'};"
+				>
+					<AgentBuilderPanel />
+				</div>
+
+				<div
+					class="h-full overflow-y-auto ember-scrollbar-hidden"
+					style="display: {activeTab === 'bookmarks' ? 'block' : 'none'};"
+				>
+					<BookmarksPanel />
+				</div>
+			</div>
 		</div>
 
-		<!-- Empty state -->
 		<div
-			class="flex flex-col items-center justify-center flex-1"
+			class="absolute inset-0 flex flex-col items-center pt-3 gap-2"
+			style="
+				opacity: {$showRightSidebar ? 0 : 1};
+				transition: opacity 150ms ease;
+				pointer-events: {$showRightSidebar ? 'none' : 'auto'};
+			"
 		>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="48"
-				height="48"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="var(--ember-flame)"
-				stroke-width="1.5"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				style="opacity: 0.2;"
-				aria-hidden="true"
-			>
-				<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
-			</svg>
-			<span
-				style="
-					font-size: 13px;
-					color: var(--ember-text-tertiary);
-					margin-top: 12px;
-				"
-			>
-				Coming soon
-			</span>
+			<Tooltip content="Panel">
+				<button
+					type="button"
+					class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)] cursor-ew-resize"
+					style="width: 32px; height: 32px; color: var(--ember-text-tertiary);"
+					on:click={() => showRightSidebar.set(true)}
+					aria-label="Open panel"
+				>
+					<!-- Original panel icon (kept for easy revert)
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+						<line x1="15" x2="15" y1="3" y2="21" />
+					</svg>
+					-->
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<path d="m15 18-6-6 6-6" />
+					</svg>
+				</button>
+			</Tooltip>
+
+			{#each tabs as tab (tab.id)}
+				<Tooltip content={tab.label} placement="left">
+					<button
+						type="button"
+						class="flex items-center justify-center rounded-lg transition-colors {activeTab ===
+						tab.id
+							? 'ember-glow-subtle'
+							: 'hover:bg-[var(--ember-ash)]'}"
+						style="
+							width: 32px;
+							height: 32px;
+							background: {activeTab === tab.id ? 'rgba(255,77,0,0.1)' : 'transparent'};
+							color: {activeTab === tab.id ? 'var(--ember-flame)' : 'var(--ember-text-tertiary)'};
+						"
+						on:click={() => {
+							activeTab = tab.id;
+							showRightSidebar.set(true);
+						}}
+						aria-label={tab.label}
+					>
+						<svelte:component this={tab.icon} className="size-4.5" strokeWidth="1.5" />
+					</button>
+				</Tooltip>
+			{/each}
 		</div>
 	</div>
 </aside>

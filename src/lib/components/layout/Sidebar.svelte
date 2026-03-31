@@ -65,7 +65,6 @@
 	import Sidebar from '../icons/Sidebar.svelte';
 	import PinnedModelList from './Sidebar/PinnedModelList.svelte';
 	import Note from '../icons/Note.svelte';
-	import { slide } from 'svelte/transition';
 	import HotkeyHint from '../common/HotkeyHint.svelte';
 	import EmberLogo from './EmberLogo.svelte';
 
@@ -668,75 +667,36 @@
 	}}
 />
 
-{#if !$showSidebar && !$mobile}
+{#if !$mobile || $showSidebar}
 	<aside
-		class="h-screen max-h-[100dvh] flex flex-col items-center relative select-none shrink-0"
+		bind:this={navElement}
+		id="sidebar"
+		class="h-screen max-h-[100dvh] flex flex-col relative select-none shrink-0 ember-scrollbar-hidden overflow-hidden"
 		style="
-			width: 56px;
+			width: {$mobile ? ($sidebarWidth ?? 260) : ($showSidebar ? ($sidebarWidth ?? 260) : 56)}px;
 			background: var(--ember-shadow);
+			transition: width 250ms ease-in-out;
+			{$mobile ? 'position: fixed; top: 0; left: 0; z-index: 50;' : ''}
 		"
-		aria-label={$i18n.t('Sidebar')}
+		data-state={$showSidebar}
+		on:dragover={onDragOver}
+		on:drop={onDrop}
+		on:dragleave={onDragLeave}
 	>
+		<!-- Right edge accent stripe -->
 		<div class="ember-stripe absolute right-0 top-0 bottom-0 z-10" style="width: 2px;" />
 
-		<div class="flex flex-col items-center gap-2 pt-3">
-			<Tooltip content={$i18n.t('Open Sidebar')}>
-				<button
-					on:click={() => showSidebar.set(true)}
-					class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
-					style="width: 32px; height: 32px;"
-					aria-label={$i18n.t('Open Sidebar')}
-				>
-					<Sidebar className="size-4.5" strokeWidth="1.5" />
-				</button>
-			</Tooltip>
-
-			<Tooltip content={$i18n.t('New Chat')}>
-				<a
-					href="/"
-					draggable="false"
-					on:click={newChatHandler}
-					class="ember-glow flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
-					style="width: 32px; height: 32px;"
-					aria-label={$i18n.t('New Chat')}
-				>
-					<PencilSquare className="size-4.5" strokeWidth="1.5" />
-				</a>
-			</Tooltip>
-
-			<Tooltip content={$i18n.t('Search')}>
-				<button
-					on:click={() => showSearch.set(true)}
-					class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
-					style="width: 32px; height: 32px;"
-					aria-label={$i18n.t('Search')}
-				>
-					<Search className="size-4.5" strokeWidth="1.5" />
-				</button>
-			</Tooltip>
-		</div>
-	</aside>
-{/if}
-
-{#if $showSidebar}
-<!-- ── Ember Left Sidebar ───────────────────────────── -->
-<aside
-	bind:this={navElement}
-	id="sidebar"
-	class="h-screen max-h-[100dvh] flex flex-col relative select-none shrink-0 ember-scrollbar-hidden"
-	style="
-		width: 260px;
-		background: var(--ember-shadow);
-		{$mobile ? 'position: fixed; top: 0; left: 0; z-index: 50;' : ''}
-	"
-	transition:slide={{ duration: 250, axis: 'x' }}
-	data-state={$showSidebar}
-	on:dragover={onDragOver}
-	on:drop={onDrop}
-	on:dragleave={onDragLeave}
->
-	<!-- Right edge accent stripe -->
-	<div class="ember-stripe absolute right-0 top-0 bottom-0 z-10" style="width: 2px;" />
+		<div class="relative h-full">
+			<div
+				class="absolute inset-0"
+				style="
+					width: {$sidebarWidth ?? 260}px;
+					height: 100%;
+					opacity: {$mobile || $showSidebar ? 1 : 0};
+					transition: opacity 150ms ease;
+					pointer-events: {$mobile || $showSidebar ? 'auto' : 'none'};
+				"
+			><div class="h-full flex flex-col">
 
 	<!-- ── Header (56px) ── -->
 	<div
@@ -759,7 +719,7 @@
 		<Tooltip content={$i18n.t('Close Sidebar')}>
 			<button
 				on:click={() => showSidebar.set(false)}
-				class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
+				class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)] cursor-ew-resize"
 				style="width: 32px; height: 32px;"
 				aria-label={$i18n.t('Close Sidebar')}
 			>
@@ -1000,5 +960,102 @@
 			</UserMenu>
 		{/if}
 	</div>
-</aside>
+	</div>
+			</div>
+
+			{#if !$mobile}
+				<div
+					class="absolute inset-0 flex flex-col items-center"
+					style="
+						opacity: {$showSidebar ? 0 : 1};
+						transition: opacity 150ms ease;
+						pointer-events: {$showSidebar ? 'none' : 'auto'};
+					"
+				><div class="flex flex-col items-center pt-3">
+			<Tooltip content={$i18n.t('Open Sidebar')}>
+				<button
+					on:click={() => showSidebar.set(true)}
+					class="group relative flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)] cursor-ew-resize"
+					style="width: 32px; height: 32px;"
+					aria-label={$i18n.t('Open Sidebar')}
+				>
+					<div class="absolute inset-0 flex items-center justify-center transition-opacity duration-150 group-hover:opacity-0">
+						<EmberLogo size={24} />
+					</div>
+					<div class="absolute inset-0 flex items-center justify-center transition-opacity duration-150 opacity-0 group-hover:opacity-100">
+						<Sidebar className="size-4.5" strokeWidth="1.5" />
+					</div>
+				</button>
+			</Tooltip>
+
+			<div class="flex flex-col items-center gap-2 mt-3">
+				<Tooltip content={$i18n.t('New Chat')}>
+					<a
+						href="/"
+						draggable="false"
+						on:click={newChatHandler}
+						class="ember-glow flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
+						style="width: 32px; height: 32px;"
+						aria-label={$i18n.t('New Chat')}
+					>
+						<PencilSquare className="size-4.5" strokeWidth="1.5" />
+					</a>
+				</Tooltip>
+
+				<Tooltip content={$i18n.t('Search')}>
+					<button
+						on:click={() => showSearch.set(true)}
+						class="flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
+						style="width: 32px; height: 32px;"
+						aria-label={$i18n.t('Search')}
+					>
+						<Search className="size-4.5" strokeWidth="1.5" />
+					</button>
+				</Tooltip>
+			</div>
+		</div>
+
+		{#if $user}
+			<div class="mt-auto pb-3">
+				<UserMenu
+					role={$user?.role}
+					profile={$config?.features?.enable_user_status ?? true}
+					showActiveUsers={false}
+					className="max-w-[228px]"
+					on:show={(e) => {
+						if (e.detail === 'archived-chat') {
+							showArchivedChats.set(true);
+						}
+					}}
+				>
+					<button
+						class="relative flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--ember-ash)]"
+						style="width: 32px; height: 32px;"
+						aria-label={$i18n.t('User Menu')}
+					>
+						<div
+							class="flex items-center justify-center rounded-full"
+							style="
+								width: 26px;
+								height: 26px;
+								background: var(--ember-ash);
+								font-size: 11px;
+								font-weight: 500;
+								color: var(--ember-text-primary);
+							"
+						>
+							{($user.name ?? 'U')[0].toUpperCase()}
+						</div>
+						<span
+							class="absolute bottom-[2px] right-[2px] block rounded-full ring-2 ring-[var(--ember-shadow)]"
+							style="width: 8px; height: 8px; background: {($user?.is_active ?? true) ? '#22c55e' : '#6b7280'};"
+						/>
+					</button>
+				</UserMenu>
+			</div>
+		{/if}
+				</div>
+			{/if}
+		</div>
+	</aside>
 {/if}
