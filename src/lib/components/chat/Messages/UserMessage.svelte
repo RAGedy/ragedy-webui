@@ -5,6 +5,7 @@
 
 	import { models, settings } from '$lib/stores';
 	import { user as _user } from '$lib/stores';
+	import { bookmarksRefreshToken } from '$lib/stores';
 	import { copyToClipboard as _copyToClipboard, formatDate } from '$lib/utils';
 	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
 
@@ -15,6 +16,8 @@
 	import Markdown from './Markdown.svelte';
 	import Image from '$lib/components/common/Image.svelte';
 	import DeleteConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
+	import Bookmark from '$lib/components/icons/Bookmark.svelte';
+	import BookmarkSlash from '$lib/components/icons/BookmarkSlash.svelte';
 
 	import localizedFormat from 'dayjs/plugin/localizedFormat';
 
@@ -33,6 +36,7 @@
 	export let showPreviousMessage: Function;
 	export let showNextMessage: Function;
 
+	export let updateChat: Function = async () => {};
 	export let editMessage: Function;
 	export let deleteMessage: Function;
 
@@ -69,6 +73,25 @@
 		if (res) {
 			toast.success($i18n.t('Copying to clipboard was successful!'));
 		}
+	};
+
+	const toggleBookmark = async () => {
+		const now = Date.now();
+		const existingBookmark = history.messages?.[message.id]?.bookmark;
+
+		if (existingBookmark) {
+			delete history.messages[message.id].bookmark;
+		} else {
+			history.messages[message.id].bookmark = {
+				title: 'New bookmark',
+				pinned: false,
+				createdAt: now,
+				updatedAt: now
+			};
+		}
+
+		await updateChat();
+		bookmarksRefreshToken.update((count) => count + 1);
 	};
 
 	const editMessageHandler = async () => {
@@ -535,6 +558,31 @@
 										d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"
 									/>
 								</svg>
+							</button>
+						</Tooltip>
+					{/if}
+
+					{#if !readOnly}
+						<Tooltip
+							content={history.messages?.[message.id]?.bookmark
+								? $i18n.t('Unbookmark')
+								: $i18n.t('Bookmark')}
+							placement="bottom"
+						>
+							<button
+								class="{($settings?.highContrastMode ?? false)
+									? ''
+									: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition"
+								on:click={toggleBookmark}
+								aria-label={history.messages?.[message.id]?.bookmark
+									? $i18n.t('Unbookmark')
+									: $i18n.t('Bookmark')}
+							>
+								{#if history.messages?.[message.id]?.bookmark}
+									<BookmarkSlash className="w-4 h-4" strokeWidth="2.1" />
+								{:else}
+									<Bookmark className="w-4 h-4" strokeWidth="2.1" />
+								{/if}
 							</button>
 						</Tooltip>
 					{/if}

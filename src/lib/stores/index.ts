@@ -96,6 +96,7 @@ export const showRightSidebar = writable(
 		? localStorage.getItem('ember-right-sidebar-open') !== 'false'
 		: true
 );
+export const bookmarksRefreshToken = writable(0);
 export const showEmbeds = writable(false);
 export const showOverview = writable(false);
 export const showArtifacts = writable(false);

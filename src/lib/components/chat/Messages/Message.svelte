@@ -67,6 +67,7 @@
 				{gotoMessage}
 				{showPreviousMessage}
 				{showNextMessage}
+				{updateChat}
 				{editMessage}
 				{deleteMessage}
 				{readOnly}

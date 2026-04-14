@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { v4 as uuidv4 } from 'uuid';
 	import {
+		bookmarksRefreshToken,
 		chats,
 		config,
 		settings,
@@ -355,6 +356,7 @@
 					parentId: parentId,
 					childrenIds: [],
 					files: undefined,
+					bookmark: undefined,
 					content: content,
 					timestamp: Math.floor(Date.now() / 1000) // Unix epoch
 				};
@@ -395,8 +397,10 @@
 
 	const deleteMessage = async (messageId) => {
 		const messageToDelete = history.messages[messageId];
+		const hadBookmark = Boolean(messageToDelete?.bookmark);
 		const parentMessageId = messageToDelete.parentId;
 		const childMessageIds = messageToDelete.childrenIds ?? [];
+		const hadBookmarkedChild = childMessageIds.some((id) => Boolean(history.messages?.[id]?.bookmark));
 
 		// Collect all grandchildren
 		const grandchildrenIds = childMessageIds.flatMap(
@@ -422,6 +426,10 @@
 		[messageId, ...childMessageIds].forEach((id) => {
 			delete history.messages[id];
 		});
+
+		if (hadBookmark || hadBookmarkedChild) {
+			bookmarksRefreshToken.update((count) => count + 1);
+		}
 
 		showMessage({ id: parentMessageId }, false);
 	};

@@ -17,6 +17,7 @@
 
 	import {
 		audioQueue,
+		bookmarksRefreshToken,
 		config,
 		models,
 		settings,
@@ -47,6 +48,8 @@
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import WebSearchResults from './ResponseMessage/WebSearchResults.svelte';
 	import Sparkles from '$lib/components/icons/Sparkles.svelte';
+	import Bookmark from '$lib/components/icons/Bookmark.svelte';
+	import BookmarkSlash from '$lib/components/icons/BookmarkSlash.svelte';
 
 	import DeleteConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 
@@ -192,6 +195,25 @@
 		if (res) {
 			toast.success($i18n.t('Copying to clipboard was successful!'));
 		}
+	};
+
+	const toggleBookmark = async () => {
+		const now = Date.now();
+		const existingBookmark = history.messages?.[message.id]?.bookmark;
+
+		if (existingBookmark) {
+			delete history.messages[message.id].bookmark;
+		} else {
+			history.messages[message.id].bookmark = {
+				title: 'New bookmark',
+				pinned: false,
+				createdAt: now,
+				updatedAt: now
+			};
+		}
+
+		await updateChat();
+		bookmarksRefreshToken.update((count) => count + 1);
 	};
 
 	const stopAudio = () => {
@@ -1014,6 +1036,31 @@
 										</svg>
 									</button>
 								</Tooltip>
+
+								{#if !readOnly}
+									<Tooltip
+										content={history.messages?.[message.id]?.bookmark
+											? $i18n.t('Unbookmark')
+											: $i18n.t('Bookmark')}
+										placement="bottom"
+									>
+										<button
+											aria-label={history.messages?.[message.id]?.bookmark
+												? $i18n.t('Unbookmark')
+												: $i18n.t('Bookmark')}
+											class="{isLastMessage || ($settings?.highContrastMode ?? false)
+												? 'visible'
+												: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition"
+											on:click={toggleBookmark}
+										>
+											{#if history.messages?.[message.id]?.bookmark}
+												<BookmarkSlash className="w-4 h-4" strokeWidth="2.1" />
+											{:else}
+												<Bookmark className="w-4 h-4" strokeWidth="2.1" />
+											{/if}
+										</button>
+									</Tooltip>
+								{/if}
 
 								{#if $user?.role === 'admin' || ($user?.permissions?.chat?.tts ?? true)}
 									<Tooltip content={$i18n.t('Read Aloud')} placement="bottom">
